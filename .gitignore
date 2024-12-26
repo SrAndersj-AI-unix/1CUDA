@@ -12,3 +12,4 @@
 *.pth
 *.cu
 *.sh
+pytorch-env/

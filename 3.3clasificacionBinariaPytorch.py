@@ -3,6 +3,8 @@ import torch.nn as nn
 import torch.optim as optim
 import matplotlib.pyplot as plt
 
+device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+
 # Generar datos ficticios para clasificación binaria
 torch.manual_seed(0)
 x = torch.randn(100, 2)  # 100 puntos con 2 características cada uno
@@ -12,11 +14,17 @@ y = (x[:, 0] + x[:, 1] > 0).float().unsqueeze(1)  # Clase 1 si suma > 0, clase 0
 train_x, test_x = x[:80], x[80:]
 train_y, test_y = y[:80], y[80:]
 
+# Mover los datos al dispositivo
+train_x = train_x.to(device)
+train_y = train_y.to(device)
+test_x = test_x.to(device)
+test_y = test_y.to(device)
+
 # Modelo lineal para clasificación
 model = nn.Sequential(
     nn.Linear(2, 1),  # 2 características de entrada, 1 salida
     nn.Sigmoid()  # Activación para probabilidad
-)
+).to(device)  # Mover modelo al dispositivo
 
 # Función de pérdida y optimizador
 criterion = nn.BCELoss()  # Binary Cross Entropy Loss
@@ -36,7 +44,7 @@ for epoch in range(epochs):
 
 # Evaluación
 with torch.no_grad():
-    y_pred_test = model(x)  # Predicciones para todos los datos
+    y_pred_test = model(test_x)  # Predicciones para el conjunto de prueba
     y_pred_class = (y_pred_test > 0.5).float()  # Clasificaciones predichas
 
 # Mover datos a CPU para visualización
@@ -70,8 +78,6 @@ plt.title("Clasificación binaria: Datos reales y Predicciones")
 plt.savefig("clasificacion_binaria_predicciones_corregido.png")
 print("La gráfica ha sido guardada como 'clasificacion_binaria_predicciones_corregido.png'")
 
-
 # Guardar el modelo entrenado
 torch.save(model.state_dict(), "modelo_clasificacion_binaria.pth")
 print("El modelo ha sido guardado como 'modelo_clasificacion_binaria.pth'")
-
