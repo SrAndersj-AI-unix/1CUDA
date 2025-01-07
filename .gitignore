@@ -13,3 +13,8 @@
 *.cu
 *.sh
 pytorch-env/
+
+# Ignorar archivos de caché de Python
+__pycache__/
+*.pyc
+*.pyo
